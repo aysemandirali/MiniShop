@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MiniShop.Api/MiniShop.Api.csproj" />
+  </Folder>
+</Solution>
