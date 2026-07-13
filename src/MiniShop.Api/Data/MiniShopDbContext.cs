@@ -21,6 +21,10 @@ public class MiniShopDbContext : DbContext
         modelBuilder.Entity<OrderItem>()
             .Property(orderItem => orderItem.UnitPrice)
             .HasPrecision(18, 2);
+
+        modelBuilder.Entity<Order>()
+            .Property(order => order.TotalAmount)
+            .HasPrecision(18, 2);
     }
 
     public DbSet<Category> Categories { get; set; }
