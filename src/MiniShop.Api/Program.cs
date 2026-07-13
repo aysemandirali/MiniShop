@@ -1,4 +1,13 @@
+
+using Microsoft.EntityFrameworkCore;
+
+using MiniShop.Api.Data;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<MiniShopDbContext>(options =>
+      options.UseSqlServer(
+          builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add services to the container.
 
