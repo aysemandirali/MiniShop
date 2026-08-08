@@ -18,3 +18,9 @@ obj/
 .env
 .env.*
 !.env.example
+
+# Node / frontend build output
+node_modules/
+dist/
+dist-ssr/
+*.local
