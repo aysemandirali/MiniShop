@@ -2,8 +2,9 @@
 -- MiniShop - Urun Gorsellerini Guncelleme
 -- ============================================
 -- Her urune, kategorisine uygun GERCEK bir fotograf atar (Wikimedia Commons'tan,
--- serbest lisansli ve stabil adresli gorseller). Ayni kategorideki urunler,
--- o kategori icin dogrulanmis birden fazla fotograf arasinda ROW_NUMBER ile
+-- serbest lisansli ve stabil adresli gorseller). Yonlendirme (redirect) gecikmesini
+-- onlemek icin dogrudan upload.wikimedia.org adresleri kullanilir. Ayni kategorideki
+-- urunler, o kategori icin dogrulanmis birden fazla fotograf arasinda ROW_NUMBER ile
 -- sirayla dagitilir; boylece hepsi birbirinin ayni olmaz.
 -- Ornekler: CTE (WITH), ROW_NUMBER() OVER (PARTITION BY ...), UPDATE ... FROM ... JOIN,
 -- CASE ifadesi.
@@ -21,28 +22,28 @@ WITH Ranked AS (
 )
 UPDATE p
 SET ImageUrl = CASE r.CategoryName
-    WHEN N'Kahveler' THEN 'https://commons.wikimedia.org/wiki/Special:FilePath/' + (
+    WHEN N'Kahveler' THEN
         CASE r.Sira % 3
-            WHEN 0 THEN 'Espresso.jpg'
-            WHEN 1 THEN 'Cappuccino.jpg'
-            ELSE 'Turkish_coffee.jpg'
-        END)
-    WHEN N'Soğuk İçecekler' THEN 'https://commons.wikimedia.org/wiki/Special:FilePath/' + (
+            WHEN 0 THEN 'https://upload.wikimedia.org/wikipedia/commons/b/bb/Espresso.jpg'
+            WHEN 1 THEN 'https://upload.wikimedia.org/wikipedia/commons/3/3a/Cappuccino.jpg'
+            ELSE 'https://upload.wikimedia.org/wikipedia/commons/e/ee/Turkish_coffee.jpg'
+        END
+    WHEN N'Soğuk İçecekler' THEN
         CASE r.Sira % 6
-            WHEN 0 THEN 'Iced_tea.jpg'
-            WHEN 1 THEN 'Ayran.jpg'
-            WHEN 2 THEN 'Lemonade.jpg'
-            WHEN 3 THEN 'Orange_juice.jpg'
-            WHEN 4 THEN 'Milkshake.jpg'
-            ELSE 'Iced_coffee.jpg'
-        END)
-    WHEN N'Tatlılar' THEN 'https://commons.wikimedia.org/wiki/Special:FilePath/Tiramisu.jpg'
-    WHEN N'Atıştırmalıklar' THEN 'https://commons.wikimedia.org/wiki/Special:FilePath/' + (
+            WHEN 0 THEN 'https://upload.wikimedia.org/wikipedia/commons/b/bc/Iced_tea.jpg'
+            WHEN 1 THEN 'https://upload.wikimedia.org/wikipedia/commons/b/b7/Ayran.jpg'
+            WHEN 2 THEN 'https://upload.wikimedia.org/wikipedia/commons/b/b7/Lemonade.jpg'
+            WHEN 3 THEN 'https://upload.wikimedia.org/wikipedia/commons/f/f9/Orange_juice.jpg'
+            WHEN 4 THEN 'https://upload.wikimedia.org/wikipedia/commons/e/e1/Milkshake.jpg'
+            ELSE 'https://upload.wikimedia.org/wikipedia/commons/f/f3/Iced_coffee.jpg'
+        END
+    WHEN N'Tatlılar' THEN 'https://upload.wikimedia.org/wikipedia/commons/8/87/Tiramisu.jpg'
+    WHEN N'Atıştırmalıklar' THEN
         CASE r.Sira % 2
-            WHEN 0 THEN 'Croissant.jpg'
-            ELSE 'Mixed_nuts.jpg'
-        END)
-    ELSE 'https://commons.wikimedia.org/wiki/Special:FilePath/Espresso.jpg'
+            WHEN 0 THEN 'https://upload.wikimedia.org/wikipedia/commons/3/32/Croissant.jpg'
+            ELSE 'https://upload.wikimedia.org/wikipedia/commons/5/57/Mixed_nuts.jpg'
+        END
+    ELSE 'https://upload.wikimedia.org/wikipedia/commons/b/bb/Espresso.jpg'
 END
 FROM Products p
 INNER JOIN Ranked r ON r.Id = p.Id;

@@ -24,12 +24,27 @@ export interface Product {
 }
 
 // Wikimedia Commons'ta dogrulanmis, gercek ve serbest lisansli fotograflar.
-// Ayni kategorideki urunler bu havuzdan sirayla (id'ye gore) dagitilir.
+// Yonlendirme (redirect) gecikmesini onlemek icin dogrudan upload.wikimedia.org
+// adresleri kullanilir. Ayni kategorideki urunler bu havuzdan sirayla (id'ye gore) dagitilir.
 const CATEGORY_PHOTOS: Record<string, string[]> = {
-  Kahveler: ["Espresso.jpg", "Cappuccino.jpg", "Turkish_coffee.jpg"],
-  "Soğuk İçecekler": ["Iced_tea.jpg", "Ayran.jpg", "Lemonade.jpg", "Orange_juice.jpg", "Milkshake.jpg", "Iced_coffee.jpg"],
-  Tatlılar: ["Tiramisu.jpg"],
-  Atıştırmalıklar: ["Croissant.jpg", "Mixed_nuts.jpg"],
+  Kahveler: [
+    "https://upload.wikimedia.org/wikipedia/commons/b/bb/Espresso.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cappuccino.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/e/ee/Turkish_coffee.jpg",
+  ],
+  "Soğuk İçecekler": [
+    "https://upload.wikimedia.org/wikipedia/commons/b/bc/Iced_tea.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/b/b7/Ayran.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/b/b7/Lemonade.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/f/f9/Orange_juice.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/e/e1/Milkshake.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/f/f3/Iced_coffee.jpg",
+  ],
+  Tatlılar: ["https://upload.wikimedia.org/wikipedia/commons/8/87/Tiramisu.jpg"],
+  Atıştırmalıklar: [
+    "https://upload.wikimedia.org/wikipedia/commons/3/32/Croissant.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/5/57/Mixed_nuts.jpg",
+  ],
 };
 
 export function getProductImageUrl(product: Product): string {
@@ -37,8 +52,7 @@ export function getProductImageUrl(product: Product): string {
     return product.imageUrl;
   }
   const pool = CATEGORY_PHOTOS[product.categoryName] ?? CATEGORY_PHOTOS.Kahveler;
-  const file = pool[product.id % pool.length];
-  return `https://commons.wikimedia.org/wiki/Special:FilePath/${file}`;
+  return pool[product.id % pool.length];
 }
 
 export interface Customer {
@@ -114,6 +128,9 @@ export const api = {
   deleteProduct: (id: number) => request<void>(`/Products/${id}`, { method: "DELETE" }),
 
   getCustomers: () => request<Customer[]>("/Customers"),
+  createCustomer: (data: { fullName: string; email: string; phone?: string | null }) =>
+    request<Customer>("/Customers", { method: "POST", body: JSON.stringify(data) }),
+  deleteCustomer: (id: number) => request<void>(`/Customers/${id}`, { method: "DELETE" }),
 
   getOrders: () => request<Order[]>("/Orders"),
   createOrder: (data: { customerId: number; items: { productId: number; quantity: number }[] }) =>

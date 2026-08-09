@@ -28,7 +28,7 @@ export default function StorePage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [customerId, setCustomerId] = useState("");
+  const [customerName, setCustomerName] = useState("");
   const [items, setItems] = useState<ItemRow[]>([{ productId: "", quantity: "1" }]);
   const [saving, setSaving] = useState(false);
 
@@ -66,18 +66,33 @@ export default function StorePage() {
     setItems([...items, { productId: String(productId), quantity: "1" }]);
   };
 
+  const resolveCustomerId = async (name: string): Promise<number> => {
+    const trimmed = name.trim();
+    const existing = customers.find((customer) => customer.fullName.toLowerCase() === trimmed.toLowerCase());
+    if (existing) {
+      return existing.id;
+    }
+    const slug = trimmed.toLowerCase().replace(/[^a-z0-9şöçğüı]/g, "-");
+    const newCustomer = await api.createCustomer({
+      fullName: trimmed,
+      email: `${slug}-${Date.now()}@minishop.local`,
+    });
+    return newCustomer.id;
+  };
+
   const handleSubmit = async () => {
     setSaving(true);
     setError(null);
     try {
+      const customerId = await resolveCustomerId(customerName);
       await api.createOrder({
-        customerId: Number(customerId),
+        customerId,
         items: items
           .filter((item) => item.productId)
           .map((item) => ({ productId: Number(item.productId), quantity: Number(item.quantity) })),
       });
       setSuccess("Siparişiniz alındı!");
-      setCustomerId("");
+      setCustomerName("");
       setItems([{ productId: "", quantity: "1" }]);
       loadData();
     } catch (err) {
@@ -201,20 +216,14 @@ export default function StorePage() {
         )}
 
         <TextField
-          select
-          label="Kim sipariş veriyor?"
-          value={customerId}
-          onChange={(e) => setCustomerId(e.target.value)}
+          label="İsminiz"
+          placeholder="Adınızı yazın"
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
           fullWidth
           size="small"
           sx={{ mb: 2 }}
-        >
-          {customers.map((customer) => (
-            <MenuItem key={customer.id} value={customer.id}>
-              {customer.fullName}
-            </MenuItem>
-          ))}
-        </TextField>
+        />
 
         {items.map((item, index) => (
           <Box key={index} sx={{ display: "flex", gap: 1, mb: 1, alignItems: "center" }}>
@@ -253,7 +262,7 @@ export default function StorePage() {
           variant="contained"
           fullWidth
           onClick={handleSubmit}
-          disabled={saving || !customerId || !items.some((item) => item.productId)}
+          disabled={saving || !customerName.trim() || !items.some((item) => item.productId)}
         >
           Siparişi Tamamla
         </Button>
