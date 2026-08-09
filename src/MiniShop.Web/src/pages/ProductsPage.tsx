@@ -117,7 +117,12 @@ export default function ProductsPage() {
               <TableRow key={product.id} hover>
                 <TableCell>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <Avatar src={getProductImageUrl(product)} alt={product.name} variant="rounded" />
+                    <Avatar
+                      src={getProductImageUrl(product)}
+                      alt={product.name}
+                      variant="rounded"
+                      slotProps={{ img: { loading: "lazy" } }}
+                    />
                     <Box>
                       <Typography fontWeight={600}>{product.name}</Typography>
                       {product.description && (

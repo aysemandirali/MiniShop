@@ -159,6 +159,7 @@ export default function StorePage() {
                       height={140}
                       image={getProductImageUrl(product)}
                       alt={product.name}
+                      loading="lazy"
                       onError={(e) => {
                         (e.target as HTMLImageElement).style.display = "none";
                       }}
