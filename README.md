@@ -1,27 +1,28 @@
-# MiniShop - Kafe Siparis Sistemi
+# MiniShop - Kafe Sipariş Sistemi
 
-Bu proje, SQL ve veritabani tasarimi bilgimi uygulamali olarak pekistirmek amaciyla basladigim, ardindan gercek bir backend ve arayuz uzerinde (ASP.NET Core Web API + Entity Framework Core + React) genisletildigim bir calismadir.
+Bu proje, SQL ve veritabanı tasarımı bilgimi uygulamalı olarak pekiştirmek amacıyla başladığım, ardından gerçek bir backend ve arayüz üzerinde (ASP.NET Core Web API + Entity Framework Core + React) genişlettiğim bir çalışmadır.
 
-## Projenin Amaci
+## Projenin Amacı
 
-MiniShop, bir kafenin online menu ve siparis takip sistemini simule eder: musteriler kategorilere ayrilmis urunleri (kahveler, soguk icecekler, tatlilar, atistirmaliklar) gorur ve siparis verir; kafe sahibi siparisleri ve stok durumunu takip eder. Bu senaryo uzerinden musteriler, urunler, kategoriler, siparisler ve siparis detaylari arasindaki iliskileri modelleyen bir veritabani ve bu veritabani uzerinde calisan bir REST API + web arayuzu gelistirdim.
+MiniShop, bir iş yeri kafeteryasının online menü ve sipariş takip sistemini simüle eder: çalışanlar kategorilere ayrılmış ürünleri (kahveler, soğuk içecekler, tatlılar, atıştırmalıklar) görür, kendi isimlerini yazıp sipariş verir; kafe görevlisi ürünleri/kategorileri yönetir ve gelen siparişleri takip eder. Bu senaryo üzerinden müşteriler, ürünler, kategoriler, siparişler ve sipariş detayları arasındaki ilişkileri modelleyen bir veritabanı ve bu veritabanı üzerinde çalışan bir REST API + web arayüzü geliştirdim.
 
-## Iki Katman
+## Üç Katman
 
-### 1) Ham SQL (`database/` klasoru)
+### 1) Ham SQL (`database/` klasörü)
 
-SQL egitiminde islenen konularin dogrudan T-SQL ile uygulandigi kisim:
+SQL eğitiminde işlenen konuların doğrudan T-SQL ile uygulandığı kısım:
 
-- Veritabani ve tablo olusturma (`01_create_database.sql`, `02_create_tables.sql`)
-- Primary key, foreign key, unique ve check constraint kullanimi
-- `INSERT`, `UPDATE`, `DELETE` islemleri (`03_insert_sample_data.sql`)
-- `SELECT`, `WHERE`, `ORDER BY`, `GROUP BY` sorgulari
-- `INNER JOIN` ve `LEFT JOIN` kullanimi
-- Toplam satis, stok ve musteri siparis raporlari
-- View (`vw_ProductSales`) ve stored procedure (`sp_GetCustomerOrders`) ornekleri
-- `UPDATE ... FROM ... JOIN` ve `CASE` ifadesiyle urun gorseli atama (`05_update_product_images.sql`)
+- Veritabanı ve tablo oluşturma (`01_create_database.sql`, `02_create_tables.sql`)
+- Primary key, foreign key, unique ve check constraint kullanımı
+- `INSERT`, `UPDATE`, `DELETE` işlemleri (`03_insert_sample_data.sql`)
+- `SELECT`, `WHERE`, `ORDER BY`, `GROUP BY` sorguları
+- `INNER JOIN` ve `LEFT JOIN` kullanımı
+- Toplam satış, stok ve müşteri sipariş raporları
+- View (`vw_ProductSales`) ve stored procedure (`sp_GetCustomerOrders`) örnekleri
+- CTE (`WITH`), `ROW_NUMBER() OVER (PARTITION BY ...)`, `UPDATE ... FROM ... JOIN` ve `CASE`
+  ifadesiyle ürünlere kategoriye uygun görsel atama (`05_update_product_images.sql`)
 
-Calistirmak icin (SQL Server Management Studio veya `sqlcmd` ile), dosyalari sirasiyla calistirmak yeterli:
+Çalıştırmak için (SQL Server Management Studio veya `sqlcmd` ile), dosyaları sırasıyla çalıştırmak yeterli:
 
 ```
 sqlcmd -S localhost\SQLEXPRESS -E -i database/01_create_database.sql
@@ -33,32 +34,36 @@ sqlcmd -S localhost\SQLEXPRESS -E -i database/05_update_product_images.sql
 
 ### 2) ASP.NET Core Web API (`src/MiniShop.Api`)
 
-Ayni veri modelinin Entity Framework Core ile kod uzerinden yonetildigi, gercek bir REST API katmani:
+Aynı veri modelinin Entity Framework Core ile kod üzerinden yönetildiği, gerçek bir REST API katmanı:
 
-- Categories, Products, Customers, Orders icin CRUD uc noktalari
-- Siparis olusturma sirasinda otomatik stok kontrolu ve toplam tutar hesaplama
-- EF Core Migrations ile veritabani semasinin kod uzerinden yonetimi
-- Swagger UI ile interaktif API dokumantasyonu ve test
+- Categories, Products, Customers, Orders için CRUD uç noktaları
+- Sipariş oluşturma sırasında otomatik stok kontrolü ve toplam tutar hesaplama
+- EF Core Migrations ile veritabanı şemasının kod üzerinden yönetimi
+- Swagger UI ile interaktif API dokümantasyonu ve test
+- Web arayüzünün erişebilmesi için CORS ayarı
 
-Calistirmak icin:
+Çalıştırmak için:
 
 ```
 dotnet run --project src/MiniShop.Api
 ```
 
-sonra tarayicidan `https://localhost:7154/swagger` adresine gidilebilir. Baglanti dizesi `src/MiniShop.Api/appsettings.json` icinde tanimli (varsayilan: `localhost\SQLEXPRESS`).
+sonra tarayıcıdan `https://localhost:7154/swagger` adresine gidilebilir. Bağlantı dizesi `src/MiniShop.Api/appsettings.json` içinde tanımlı (varsayılan: `localhost\SQLEXPRESS`).
 
-### 3) React Web Arayuzu (`src/MiniShop.Web`)
+### 3) React Web Arayüzü (`src/MiniShop.Web`)
 
-Material UI ile hazirlanmis, ikiye ayrilmis web arayuzu:
+Material UI ile hazırlanmış, ikiye ayrılmış web arayüzü:
 
-- **Siparis Ver** (musteri gorunumu): kategorilere gore urun/gorsel listesi, sipariş olusturma
-- **Yonetim Paneli** (kafe gorevlisi gorunumu, basit PIN ile korunur): Urunler (ekle/sil),
-  Kategoriler (ekle), Tum Siparisler (listeleme)
-- Urun gorselleri, veritabaninda saklanan (bkz. `05_update_product_images.sql`) veya
-  kategoriye gore otomatik uretilen adreslerden gosterilir
+- **Sipariş Ver** (çalışan görünümü): kategorilere göre ürün/görsel listesi (tıklanınca ilgili
+  kategoriye kayan üst navigasyon ile), kendi isminizi yazarak sipariş oluşturma — isim
+  sistemde yoksa otomatik yeni müşteri olarak kaydedilir, varsa mevcut kayıt kullanılır
+- **Yönetim Paneli** (kafe görevlisi görünümü, `1234` PIN'i ile korunur): Ürünler (ekle/sil),
+  Kategoriler (ekle), Tüm Siparişler (listeleme)
+- Ürün görselleri, Wikimedia Commons'tan alınan gerçek fotoğraflardır; veritabanında
+  saklanır (bkz. `05_update_product_images.sql`) ve kategoriye göre otomatik seçilen bir
+  yedek görselle desteklenir
 
-Calistirmak icin (backend zaten calisir durumda olmali):
+Çalıştırmak için (backend zaten çalışır durumda olmalı):
 
 ```
 cd src/MiniShop.Web
@@ -66,9 +71,9 @@ npm install
 npm run dev
 ```
 
-sonra tarayicidan `http://localhost:5173` adresine gidilebilir.
+sonra tarayıcıdan `http://localhost:5173` adresine gidilebilir.
 
-## Klasor Yapisi
+## Klasör Yapısı
 
 ```text
 MiniShop/
@@ -82,14 +87,15 @@ MiniShop/
 |   `-- database-diagram.md
 |-- src/
 |   |-- MiniShop.Api/      (ASP.NET Core Web API + EF Core)
-|   `-- MiniShop.Web/      (React + Material UI arayuzu)
+|   `-- MiniShop.Web/      (React + Material UI arayüzü)
 `-- README.md
 ```
 
 ## Durum
 
-Veritabani semasi, ornek veriler ve API'nin CRUD/is kurallari tamamlandi ve test edildi.
+Veritabanı şeması, örnek veriler, API'nin CRUD/iş kuralları ve web arayüzü (sipariş verme +
+yönetim paneli) tamamlandı ve test edildi.
 
-## Gelistiren
+## Geliştiren
 
-Ayse Mandirali - [GitHub](https://github.com/aysemandirali)
+Ayşe Mandıralı - [GitHub](https://github.com/aysemandirali)

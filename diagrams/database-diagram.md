@@ -2,10 +2,10 @@
 
 ```mermaid
  erDiagram
-     CATEGORIES ||--o{ PRODUCTS : "urunleri icerir"
-     CUSTOMERS ||--o{ ORDERS : "siparis verir"
-     ORDERS ||--|{ ORDER_ITEMS : "kalemleri icerir"
-     PRODUCTS ||--o{ ORDER_ITEMS : "siparislerde bulunur"
+     CATEGORIES ||--o{ PRODUCTS : "ürünleri içerir"
+     CUSTOMERS ||--o{ ORDERS : "sipariş verir"
+     ORDERS ||--|{ ORDER_ITEMS : "kalemleri içerir"
+     PRODUCTS ||--o{ ORDER_ITEMS : "siparişlerde bulunur"
 
      CATEGORIES {
          int Id PK
@@ -20,8 +20,8 @@
          int Id PK
          nvarchar Name "max 150"
          nvarchar Description "max 1000, nullable"
-         decimal Price "decimal(18,2), 0'dan buyuk"
-         int Stock "0 veya daha buyuk"
+         decimal Price "decimal(18,2), 0'dan büyük"
+         int Stock "0 veya daha büyük"
          nvarchar ImageUrl "max 500, nullable"
          bit IsActive
          datetime2 CreatedAt
@@ -41,7 +41,8 @@
          int Id PK
          nvarchar OrderNumber UK "max 30"
          datetime2 OrderDate
-         int Status "1 ile 5 arasinda"
+         int Status "1 ile 5 arasında"
+         decimal TotalAmount "decimal(18,2)"
          int CustomerId FK
      }
 
@@ -49,8 +50,8 @@
          int Id PK
          int OrderId FK
          int ProductId FK
-         int Quantity "0'dan buyuk"
-         decimal UnitPrice "decimal(18,2), 0 veya daha buyuk"
+         int Quantity "0'dan büyük"
+         decimal UnitPrice "decimal(18,2), 0 veya daha büyük"
      }
 ```
 
