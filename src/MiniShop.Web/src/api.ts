@@ -23,6 +23,21 @@ export interface Product {
   categoryName: string;
 }
 
+const CATEGORY_IMAGE_KEYWORDS: Record<string, string> = {
+  Kahveler: "coffee",
+  "Soğuk İçecekler": "icedcoffee",
+  Tatlılar: "dessert",
+  Atıştırmalıklar: "snack",
+};
+
+export function getProductImageUrl(product: Product): string {
+  if (product.imageUrl) {
+    return product.imageUrl;
+  }
+  const keyword = CATEGORY_IMAGE_KEYWORDS[product.categoryName] ?? "coffee";
+  return `https://loremflickr.com/400/300/${keyword}?lock=${product.id}`;
+}
+
 export interface Customer {
   id: number;
   fullName: string;

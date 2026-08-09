@@ -9,6 +9,12 @@ const theme = createTheme({
     secondary: { main: "#d9a441" },
   },
   shape: { borderRadius: 10 },
+  components: {
+    // MUI otomatik büyük harfe çeviriyor ama Türkçe "i/İ" kurallarını bilmiyor
+    // (SIPARIŞ yerine SİPARİŞ olmalı) — bu yüzden otomatik dönüşümü kapatıyoruz.
+    MuiButton: { styleOverrides: { root: { textTransform: "none" } } },
+    MuiTab: { styleOverrides: { root: { textTransform: "none" } } },
+  },
 });
 
 createRoot(document.getElementById("root")!).render(

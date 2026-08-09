@@ -19,6 +19,7 @@ SQL egitiminde islenen konularin dogrudan T-SQL ile uygulandigi kisim:
 - `INNER JOIN` ve `LEFT JOIN` kullanimi
 - Toplam satis, stok ve musteri siparis raporlari
 - View (`vw_ProductSales`) ve stored procedure (`sp_GetCustomerOrders`) ornekleri
+- `UPDATE ... FROM ... JOIN` ve `CASE` ifadesiyle urun gorseli atama (`05_update_product_images.sql`)
 
 Calistirmak icin (SQL Server Management Studio veya `sqlcmd` ile), dosyalari sirasiyla calistirmak yeterli:
 
@@ -27,6 +28,7 @@ sqlcmd -S localhost\SQLEXPRESS -E -i database/01_create_database.sql
 sqlcmd -S localhost\SQLEXPRESS -E -i database/02_create_tables.sql
 sqlcmd -S localhost\SQLEXPRESS -E -i database/03_insert_sample_data.sql
 sqlcmd -S localhost\SQLEXPRESS -E -i database/04_queries.sql
+sqlcmd -S localhost\SQLEXPRESS -E -i database/05_update_product_images.sql
 ```
 
 ### 2) ASP.NET Core Web API (`src/MiniShop.Api`)
@@ -48,11 +50,13 @@ sonra tarayicidan `https://localhost:7154/swagger` adresine gidilebilir. Baglant
 
 ### 3) React Web Arayuzu (`src/MiniShop.Web`)
 
-Musterinin ve kafe sahibinin kullanacagi, Material UI ile hazirlanmis web arayuzu:
+Material UI ile hazirlanmis, ikiye ayrilmis web arayuzu:
 
-- Urunler: listeleme, yeni urun ekleme, silme
-- Kategoriler: listeleme, yeni kategori ekleme
-- Siparisler: listeleme, musteri secip urun ekleyerek yeni siparis olusturma
+- **Siparis Ver** (musteri gorunumu): kategorilere gore urun/gorsel listesi, sipariş olusturma
+- **Yonetim Paneli** (kafe gorevlisi gorunumu, basit PIN ile korunur): Urunler (ekle/sil),
+  Kategoriler (ekle), Tum Siparisler (listeleme)
+- Urun gorselleri, veritabaninda saklanan (bkz. `05_update_product_images.sql`) veya
+  kategoriye gore otomatik uretilen adreslerden gosterilir
 
 Calistirmak icin (backend zaten calisir durumda olmali):
 
@@ -72,7 +76,8 @@ MiniShop/
 |   |-- 01_create_database.sql
 |   |-- 02_create_tables.sql
 |   |-- 03_insert_sample_data.sql
-|   `-- 04_queries.sql
+|   |-- 04_queries.sql
+|   `-- 05_update_product_images.sql
 |-- diagrams/
 |   `-- database-diagram.md
 |-- src/

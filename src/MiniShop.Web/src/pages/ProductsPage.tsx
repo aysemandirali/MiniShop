@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   Alert,
+  Avatar,
   Box,
   Button,
   Chip,
@@ -22,7 +23,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { api, type Category, type Product } from "../api";
+import { api, getProductImageUrl, type Category, type Product } from "../api";
 
 const emptyForm = {
   name: "",
@@ -115,12 +116,17 @@ export default function ProductsPage() {
             {products.map((product) => (
               <TableRow key={product.id} hover>
                 <TableCell>
-                  <Typography fontWeight={600}>{product.name}</Typography>
-                  {product.description && (
-                    <Typography variant="body2" color="text.secondary">
-                      {product.description}
-                    </Typography>
-                  )}
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                    <Avatar src={getProductImageUrl(product)} alt={product.name} variant="rounded" />
+                    <Box>
+                      <Typography fontWeight={600}>{product.name}</Typography>
+                      {product.description && (
+                        <Typography variant="body2" color="text.secondary">
+                          {product.description}
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
                 </TableCell>
                 <TableCell>{product.categoryName}</TableCell>
                 <TableCell align="right">{product.price.toFixed(2)} TL</TableCell>

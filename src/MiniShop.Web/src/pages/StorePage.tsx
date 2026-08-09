@@ -5,15 +5,17 @@ import {
   Button,
   Card,
   CardContent,
+  CardMedia,
   Chip,
   IconButton,
+  Stack,
   MenuItem,
   Paper,
   TextField,
   Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { api, type Category, type Customer, type Product } from "../api";
+import { api, getProductImageUrl, type Category, type Customer, type Product } from "../api";
 
 interface ItemRow {
   productId: string;
@@ -51,6 +53,10 @@ export default function StorePage() {
   const addItemRow = () => setItems([...items, { productId: "", quantity: "1" }]);
   const removeItemRow = (index: number) => setItems(items.filter((_, i) => i !== index));
 
+  const scrollToCategory = (categoryId: number) => {
+    document.getElementById(`category-${categoryId}`)?.scrollIntoView({ behavior: "auto", block: "start" });
+  };
+
   const addToOrder = (productId: number) => {
     const emptyIndex = items.findIndex((item) => !item.productId);
     if (emptyIndex >= 0) {
@@ -87,6 +93,31 @@ export default function StorePage() {
         <Typography variant="h5" sx={{ mb: 2 }}>
           Menü
         </Typography>
+
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            mb: 3,
+            position: "sticky",
+            top: 0,
+            zIndex: 1,
+            bgcolor: "background.default",
+            py: 1,
+            overflowX: "auto",
+          }}
+        >
+          {categories.map((category) => (
+            <Chip
+              key={category.id}
+              label={category.name}
+              onClick={() => scrollToCategory(category.id)}
+              variant="outlined"
+              clickable
+            />
+          ))}
+        </Stack>
+
         {categories.map((category) => {
           const categoryProducts = products.filter(
             (product) => product.categoryId === category.id && product.isActive,
@@ -95,7 +126,7 @@ export default function StorePage() {
             return null;
           }
           return (
-            <Box key={category.id} sx={{ mb: 3 }}>
+            <Box key={category.id} id={`category-${category.id}`} sx={{ mb: 3, scrollMarginTop: "72px" }}>
               <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
                 {category.name}
               </Typography>
@@ -108,6 +139,15 @@ export default function StorePage() {
               >
                 {categoryProducts.map((product) => (
                   <Card variant="outlined" key={product.id}>
+                    <CardMedia
+                      component="img"
+                      height={140}
+                      image={getProductImageUrl(product)}
+                      alt={product.name}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                      }}
+                    />
                     <CardContent>
                       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                         <Box>
