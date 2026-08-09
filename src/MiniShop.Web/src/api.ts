@@ -23,19 +23,22 @@ export interface Product {
   categoryName: string;
 }
 
-const CATEGORY_IMAGE_KEYWORDS: Record<string, string> = {
-  Kahveler: "coffee",
-  "Soğuk İçecekler": "icedcoffee",
-  Tatlılar: "dessert",
-  Atıştırmalıklar: "snack",
+// Wikimedia Commons'ta dogrulanmis, gercek ve serbest lisansli fotograflar.
+// Ayni kategorideki urunler bu havuzdan sirayla (id'ye gore) dagitilir.
+const CATEGORY_PHOTOS: Record<string, string[]> = {
+  Kahveler: ["Espresso.jpg", "Cappuccino.jpg", "Turkish_coffee.jpg"],
+  "Soğuk İçecekler": ["Iced_tea.jpg", "Ayran.jpg", "Lemonade.jpg", "Orange_juice.jpg", "Milkshake.jpg", "Iced_coffee.jpg"],
+  Tatlılar: ["Tiramisu.jpg"],
+  Atıştırmalıklar: ["Croissant.jpg", "Mixed_nuts.jpg"],
 };
 
 export function getProductImageUrl(product: Product): string {
   if (product.imageUrl) {
     return product.imageUrl;
   }
-  const keyword = CATEGORY_IMAGE_KEYWORDS[product.categoryName] ?? "coffee";
-  return `https://loremflickr.com/400/300/${keyword}?lock=${product.id}`;
+  const pool = CATEGORY_PHOTOS[product.categoryName] ?? CATEGORY_PHOTOS.Kahveler;
+  const file = pool[product.id % pool.length];
+  return `https://commons.wikimedia.org/wiki/Special:FilePath/${file}`;
 }
 
 export interface Customer {
